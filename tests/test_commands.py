@@ -151,6 +151,22 @@ def test_onboard_uses_explicit_config_and_workspace_paths(tmp_path, monkeypatch)
     assert f"--config {resolved_config}" in compact_output
 
 
+def test_onboard_uses_nanobot_home_env_for_local_instance(tmp_path, monkeypatch):
+    instance_home = tmp_path / ".nanobot-dev"
+    monkeypatch.delenv("NANOBOT_CONFIG", raising=False)
+    monkeypatch.setenv("NANOBOT_HOME", str(instance_home))
+    monkeypatch.setattr("nanobot.config.loader._current_config_path", None)
+    monkeypatch.setattr("nanobot.channels.registry.discover_all", lambda: {})
+
+    result = runner.invoke(app, ["onboard"])
+
+    assert result.exit_code == 0
+    assert (instance_home / "config.json").exists()
+    assert (instance_home / "workspace" / "AGENTS.md").exists()
+    saved = Config.model_validate(json.loads((instance_home / "config.json").read_text(encoding="utf-8")))
+    assert saved.workspace_path == instance_home / "workspace"
+
+
 def test_config_matches_github_copilot_codex_with_hyphen_prefix():
     config = Config()
     config.agents.defaults.model = "github-copilot/gpt-5.3-codex"

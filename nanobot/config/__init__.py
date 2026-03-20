@@ -12,12 +12,20 @@ from nanobot.config.paths import (
     get_runtime_subdir,
     get_workspace_path,
 )
+from nanobot.config.runtime import (
+    get_default_config_path,
+    get_default_workspace_path,
+    get_instance_home_dir,
+)
 from nanobot.config.schema import Config
 
 __all__ = [
     "Config",
     "load_config",
     "get_config_path",
+    "get_instance_home_dir",
+    "get_default_config_path",
+    "get_default_workspace_path",
     "get_data_dir",
     "get_runtime_subdir",
     "get_media_dir",
